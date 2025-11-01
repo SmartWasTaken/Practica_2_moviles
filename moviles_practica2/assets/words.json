@@ -1,0 +1,11 @@
+{
+  "facil": [
+    "CASA", "PERA", "GATO", "SOLA", "RETO", "PATO", "LAGO", "MANO"
+  ],
+  "medio": [
+    "JUGAR", "PLATO", "MONTE", "FRUTA", "LETRA", "FLAMA", "RELOJ"
+  ],
+  "dificil": [
+    "PLANTA", "PUERTA", "FLORES", "JARDIN", "OBJETO", "CABEZA"
+  ]
+}
