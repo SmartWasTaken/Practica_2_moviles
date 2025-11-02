@@ -1,48 +1,71 @@
 import 'package:flutter/material.dart';
 import '../../data/providers/word_provider.dart';
 import '../../data/repositories/preferences_repository.dart';
+import '../routes/custom_page_route.dart';
+import 'audio_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final bool isInGameMode;
+
+  const SettingsScreen({super.key, this.isInGameMode = false});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  // El repositorio para guardar y cargar las preferencias.
   final PreferencesRepository _prefsRepository = PreferencesRepository();
-  // Variable para guardar la dificultad seleccionada actualmente en la UI.
-  // La inicializamos en 'medio' por si acaso.
   Difficulty _selectedDifficulty = Difficulty.medio;
 
   @override
   void initState() {
     super.initState();
-    // 'initState' se llama una sola vez cuando el widget se crea.
-    // Es el lugar perfecto para cargar los datos iniciales.
     _loadDifficulty();
   }
 
-  // Método asíncrono para cargar la dificultad guardada en el dispositivo.
   void _loadDifficulty() async {
     final savedDifficulty = await _prefsRepository.getDifficulty();
-    // Usamos 'setState' para notificar a Flutter que los datos han cambiado
-    // y que necesita redibujar el widget con el valor correcto.
     setState(() {
       _selectedDifficulty = savedDifficulty;
     });
   }
 
-  // Método para manejar el cambio de selección y guardar la nueva preferencia.
   void _onDifficultyChanged(Difficulty? value) {
     if (value != null) {
       setState(() {
         _selectedDifficulty = value;
       });
-      // Guardamos la nueva selección de forma persistente.
-      _prefsRepository.saveDifficulty(value);
+      if (!widget.isInGameMode) {
+        _prefsRepository.saveDifficulty(value);
+      }
     }
+  }
+
+  void _applyChanges() {
+    showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Confirmar Cambio'),
+        content: const Text('Estás seguro de que quieres aplicar el nivel de dificultad, esto hará que pierdas el progreso de la partida.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              _prefsRepository.saveDifficulty(_selectedDifficulty);
+              Navigator.of(dialogContext).pop(true);
+            },
+            child: const Text('Aceptar'),
+          ),
+        ],
+      ),
+    ).then((confirmed) {
+      if (confirmed ?? false) {
+        Navigator.of(context).pop(_selectedDifficulty);
+      }
+    });
   }
 
   @override
@@ -51,37 +74,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: const Text('Ajustes'),
       ),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Dificultad',
-              style: Theme.of(context).textTheme.titleLarge,
+        children: [
+          // --- SECCIÓN DE SONIDO ---
+          Text('Sonido', style: Theme.of(context).textTheme.titleLarge),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.volume_up),
+            title: const Text('Ajustes de Sonido'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(
+                FadePageRoute(page: const AudioSettingsScreen()),
+              );
+            },
+          ),
+          const SizedBox(height: 24),
+
+          // --- SECCIÓN DE DIFICULTAD ---
+          Text('Dificultad del Juego', style: Theme.of(context).textTheme.titleLarge),
+          const Divider(),
+          RadioListTile<Difficulty>(title: const Text('Fácil (4 letras)'), value: Difficulty.facil, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
+          RadioListTile<Difficulty>(title: const Text('Medio (5 letras)'), value: Difficulty.medio, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
+          RadioListTile<Difficulty>(title: const Text('Difícil (6 letras)'), value: Difficulty.dificil, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
+          const SizedBox(height: 24),
+
+          // El botón "Aplicar" o "Volver"
+          if (widget.isInGameMode)
+            ElevatedButton(
+              onPressed: _applyChanges,
+              child: const Text('Aplicar'),
+            )
+          else
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Volver al Menú'),
             ),
-            const SizedBox(height: 10),
-            // RadioListTile es un widget perfecto para este tipo de selección.
-            RadioListTile<Difficulty>(
-              title: const Text('Fácil (4 letras)'),
-              value: Difficulty.facil,
-              groupValue: _selectedDifficulty,
-              onChanged: _onDifficultyChanged,
-            ),
-            RadioListTile<Difficulty>(
-              title: const Text('Medio (5 letras)'),
-              value: Difficulty.medio,
-              groupValue: _selectedDifficulty,
-              onChanged: _onDifficultyChanged,
-            ),
-            RadioListTile<Difficulty>(
-              title: const Text('Difícil (6 letras)'),
-              value: Difficulty.dificil,
-              groupValue: _selectedDifficulty,
-              onChanged: _onDifficultyChanged,
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

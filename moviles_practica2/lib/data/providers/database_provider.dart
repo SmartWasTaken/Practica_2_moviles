@@ -3,8 +3,6 @@ import 'package:sqflite/sqflite.dart';
 import '../../core/models/score.dart';
 
 class DatabaseProvider {
-  // Hacemos esta clase un Singleton para asegurarnos de que solo hay una
-  // instancia de la base de datos abierta en toda la app.
   DatabaseProvider._privateConstructor();
   static final DatabaseProvider instance = DatabaseProvider._privateConstructor();
 
@@ -16,7 +14,6 @@ class DatabaseProvider {
     return _database!;
   }
 
-  // Inicializa la base de datos
   Future<Database> _initDB() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'wordle.db');
@@ -24,7 +21,7 @@ class DatabaseProvider {
     return await openDatabase(
       path,
       version: 1,
-      onCreate: _createDB, // Esta función se ejecuta la primera vez que se crea la BD
+      onCreate: _createDB,
     );
   }
 
@@ -48,16 +45,15 @@ class DatabaseProvider {
     await db.insert(
       'rankings',
       score.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace, // Si hay conflicto, reemplaza
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  // Método para obtener todas las puntuaciones, ordenadas de mayor a menor
   Future<List<Score>> getScores() async {
     final db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       'rankings',
-      orderBy: 'scoreValue DESC', // Ordenamos por puntuación
+      orderBy: 'scoreValue DESC',
     );
 
     if (maps.isEmpty) {

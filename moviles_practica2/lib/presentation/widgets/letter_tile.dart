@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../bloc/game/game_state.dart'; // Necesitamos el enum LetterStatus
+import '../bloc/game/game_state.dart';
 
 class LetterTile extends StatelessWidget {
   final String letter;
@@ -11,7 +11,6 @@ class LetterTile extends StatelessWidget {
     required this.status,
   });
 
-  // Método helper para determinar el color de fondo basado en el estado
   Color _getBackgroundColor(BuildContext context) {
     switch (status) {
       case LetterStatus.correctPosition:
@@ -22,13 +21,12 @@ class LetterTile extends StatelessWidget {
         return Theme.of(context).colorScheme.secondary.withOpacity(0.5);
       case LetterStatus.initial:
       default:
-        return Colors.transparent; // Fondo transparente si no se ha adivinado
+        return Colors.transparent;
     }
   }
 
   // Método helper para determinar el color del borde
   Color _getBorderColor(BuildContext context) {
-    // Si la celda está vacía (sin letra), el borde es más oscuro
     return letter.isEmpty
         ? Theme.of(context).dividerColor
         : Theme.of(context).colorScheme.secondary;

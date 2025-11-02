@@ -16,14 +16,12 @@ class GameGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Usamos LayoutBuilder para que el tablero se ajuste al espacio disponible
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Creamos una lista de filas (Widgets)
         final List<Widget> rows = [];
-        for (int i = 0; i < guesses.length; i++) { // Iteramos sobre cada intento (fila)
+        for (int i = 0; i < guesses.length; i++) {
           final List<Widget> tiles = [];
-          for (int j = 0; j < wordSize; j++) { // Iteramos sobre cada letra de la palabra
+          for (int j = 0; j < wordSize; j++) {
             final String letter = (j < guesses[i].length) ? guesses[i][j] : '';
             final LetterStatus status = (j < statuses[i].length) ? statuses[i][j] : LetterStatus.initial;
 

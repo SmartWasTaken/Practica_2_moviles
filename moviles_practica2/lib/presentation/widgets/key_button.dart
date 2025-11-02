@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 
 class KeyButton extends StatelessWidget {
-  // El texto a mostrar (ej: 'Q')
   final String letter;
-  // El icono a mostrar (ej: un backspace)
   final IconData? icon;
-  // La función que se ejecutará al pulsar el botón
   final VoidCallback onTap;
-  // Un valor de 'flex' para que las teclas de ENTER/BORRAR puedan ser más anchas
   final int flex;
 
   const KeyButton({

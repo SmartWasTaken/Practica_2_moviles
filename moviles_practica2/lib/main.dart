@@ -1,23 +1,55 @@
+// En lib/main.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
-// ANTES (Incorrecto): import 'package:sqflite_ffi/sqflite_ffi.dart';
-// AHORA (Correcto):
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'core/services/sound_manager.dart'; // <-- Importamos
 import 'presentation/screens/main_menu_screen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Siempre primero
+
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
 
-  WidgetsFlutterBinding.ensureInitialized();
+  // Inicializamos nuestro SoundManager
+  await SoundManager.instance.init();
+  // Empezamos la música del menú
+  SoundManager.instance.playMusic('audio/music_loop.mp3');
 
   runApp(const WordleApp());
 }
 
-class WordleApp extends StatelessWidget {
+// Convertimos WordleApp en un StatefulWidget para gestionar el ciclo de vida
+class WordleApp extends StatefulWidget {
   const WordleApp({super.key});
+
+  @override
+  State<WordleApp> createState() => _WordleAppState();
+}
+
+class _WordleAppState extends State<WordleApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      SoundManager.instance.pauseMusic();
+    } else if (state == AppLifecycleState.resumed) {
+      SoundManager.instance.resumeMusic();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

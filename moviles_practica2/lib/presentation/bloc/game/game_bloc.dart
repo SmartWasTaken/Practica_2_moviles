@@ -1,13 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/models/score.dart'; // <-- IMPORTANTE: Añade esta importación
-import '../../../data/providers/word_provider.dart'; // <-- IMPORTANTE: Añade esta importación
+import '../../../core/models/score.dart';
+import '../../../data/providers/word_provider.dart';
 import '../../../data/repositories/game_repository.dart';
 import 'game_event.dart';
 import 'game_state.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   final GameRepository gameRepository;
-  static const int maxAttempts = 10;
+  static const int maxAttempts = 8;
 
   GameBloc({required this.gameRepository}) : super(GameState.initial()) {
     on<StartNewGame>(_onStartNewGame);
@@ -119,7 +119,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     ));
   }
 
-  /// MÉTODO PRIVADO PARA CALCULAR LA PUNTUACIÓN
   int _calculateScore(Difficulty difficulty, int attempts, int timeInSeconds) {
     int baseScore = 0;
     int attemptBonusMultiplier = 0;

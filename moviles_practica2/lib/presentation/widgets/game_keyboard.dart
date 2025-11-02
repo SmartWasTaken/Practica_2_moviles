@@ -5,7 +5,6 @@ import '../bloc/game/game_event.dart';
 import 'key_button.dart';
 
 class GameKeyboard extends StatelessWidget {
-  // Definimos la disposición de las teclas en filas
   static const List<String> row1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
   static const List<String> row2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ñ'];
   static const List<String> row3 = ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'DELETE'];
@@ -25,7 +24,6 @@ class GameKeyboard extends StatelessWidget {
     );
   }
 
-  // Método helper para construir una fila de teclas
   Widget _buildRow(List<String> letters, GameBloc bloc) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -33,7 +31,7 @@ class GameKeyboard extends StatelessWidget {
         if (letter == 'ENTER') {
           return KeyButton(
             letter: 'ENTER',
-            flex: 2, // Hacemos que sea más ancha
+            flex: 2,
             onTap: () => bloc.add(SubmitWord()),
             icon: Icons.check,
           );
@@ -41,7 +39,7 @@ class GameKeyboard extends StatelessWidget {
         if (letter == 'DELETE') {
           return KeyButton(
             letter: 'DELETE',
-            flex: 2, // Hacemos que sea más ancha
+            flex: 2,
             onTap: () => bloc.add(DeleteKeyPressed()),
             icon: Icons.backspace_outlined,
           );

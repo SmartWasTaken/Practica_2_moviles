@@ -7,7 +7,6 @@ import '../providers/word_provider.dart';
 
 class GameRepository {
   final WordProvider _wordProvider;
-  // Esta línea ahora funcionará porque hemos importado DatabaseProvider
   final DatabaseProvider _dbProvider = DatabaseProvider.instance;
 
   GameRepository({WordProvider? wordProvider})
@@ -17,7 +16,6 @@ class GameRepository {
     return _wordProvider.getWord(difficulty);
   }
 
-  // Este método ahora funcionará porque hemos importado Score
   Future<void> saveScore(Score score) async {
     await _dbProvider.insertScore(score);
   }

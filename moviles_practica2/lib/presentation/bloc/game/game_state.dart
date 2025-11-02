@@ -1,11 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import '../../../data/providers/word_provider.dart'; // Importamos nuestro enum Difficulty
+import '../../../data/providers/word_provider.dart';
 
-// Enum para el estado general del juego
 enum GameStatus { playing, win, lose, initial }
 
-// Enum para el estado de cada letra individual en una palabra adivinada
 enum LetterStatus { initial, notInWord, inWord, correctPosition }
 
 class GameState extends Equatable {
@@ -13,13 +11,12 @@ class GameState extends Equatable {
   final GameStatus gameStatus;
   final String correctWord;
   final int wordSize;
-  final List<List<String>> guesses; // Lista de intentos (palabras)
-  final List<List<LetterStatus>> statuses; // Lista de estados para cada letra de cada intento
+  final List<List<String>> guesses;
+  final List<List<LetterStatus>> statuses;
   final int currentAttempt;
   final Difficulty difficulty;
   final DateTime? startTime;
 
-  // Constructor
   const GameState({
     required this.gameStatus,
     required this.correctWord,
@@ -31,13 +28,11 @@ class GameState extends Equatable {
     this.startTime,
   });
 
-  // 2. ESTADO INICIAL DE FÁBRICA
-  // Un constructor "de fábrica" para definir cómo empieza el juego.
   factory GameState.initial() {
     return const GameState(
       gameStatus: GameStatus.initial,
       correctWord: '',
-      wordSize: 5, // Valor por defecto, se cambiará al empezar partida
+      wordSize: 5,
       guesses: [],
       statuses: [],
       currentAttempt: 0,
@@ -46,10 +41,6 @@ class GameState extends Equatable {
     );
   }
 
-  // 3. MÉTODO 'copyWith'
-  // Este método es CRUCIAL para el BLoC. Nos permite crear una COPIA
-  // del estado actual, pero cambiando solo las propiedades que nos interesan.
-  // Esto mantiene el estado inmutable.
   GameState copyWith({
     GameStatus? gameStatus,
     String? correctWord,
