@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/enums.dart';
 import '../bloc/game/game_state.dart';
 
 class LetterTile extends StatelessWidget {
@@ -25,7 +26,6 @@ class LetterTile extends StatelessWidget {
     }
   }
 
-  // Método helper para determinar el color del borde
   Color _getBorderColor(BuildContext context) {
     return letter.isEmpty
         ? Theme.of(context).dividerColor

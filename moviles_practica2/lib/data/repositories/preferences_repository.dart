@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/constants/enums.dart';
 import '../providers/word_provider.dart';
 
 class PreferencesRepository {

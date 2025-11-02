@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/enums.dart';
 import '../../data/providers/word_provider.dart';
 import '../../data/repositories/preferences_repository.dart';
 import '../routes/custom_page_route.dart';
@@ -6,30 +7,24 @@ import 'audio_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final bool isInGameMode;
-
   const SettingsScreen({super.key, this.isInGameMode = false});
-
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
-
 class _SettingsScreenState extends State<SettingsScreen> {
   final PreferencesRepository _prefsRepository = PreferencesRepository();
   Difficulty _selectedDifficulty = Difficulty.medio;
-
   @override
   void initState() {
     super.initState();
     _loadDifficulty();
   }
-
   void _loadDifficulty() async {
     final savedDifficulty = await _prefsRepository.getDifficulty();
     setState(() {
       _selectedDifficulty = savedDifficulty;
     });
   }
-
   void _onDifficultyChanged(Difficulty? value) {
     if (value != null) {
       setState(() {
@@ -40,7 +35,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     }
   }
-
   void _applyChanges() {
     showDialog<bool>(
       context: context,
@@ -67,7 +61,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +70,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // --- SECCIÓN DE SONIDO ---
           Text('Sonido', style: Theme.of(context).textTheme.titleLarge),
           const Divider(),
           ListTile(
@@ -92,7 +84,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 24),
 
-          // --- SECCIÓN DE DIFICULTAD ---
           Text('Dificultad del Juego', style: Theme.of(context).textTheme.titleLarge),
           const Divider(),
           RadioListTile<Difficulty>(title: const Text('Fácil (4 letras)'), value: Difficulty.facil, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
@@ -100,7 +91,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           RadioListTile<Difficulty>(title: const Text('Difícil (6 letras)'), value: Difficulty.dificil, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
           const SizedBox(height: 24),
 
-          // El botón "Aplicar" o "Volver"
           if (widget.isInGameMode)
             ElevatedButton(
               onPressed: _applyChanges,

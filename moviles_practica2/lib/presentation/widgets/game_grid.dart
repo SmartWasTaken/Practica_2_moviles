@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/enums.dart';
 import '../bloc/game/game_state.dart';
 import 'letter_tile.dart';
 

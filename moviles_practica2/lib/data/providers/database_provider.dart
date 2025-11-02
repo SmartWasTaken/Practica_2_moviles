@@ -28,15 +28,16 @@ class DatabaseProvider {
   // Crea la tabla de rankings
   Future<void> _createDB(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE rankings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        scoreValue INTEGER NOT NULL,
-        difficulty TEXT NOT NULL,
-        timeInSeconds INTEGER NOT NULL,
-        attempts INTEGER NOT NULL,
-        date TEXT NOT NULL
-      )
-    ''');
+    CREATE TABLE rankings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      scoreValue INTEGER NOT NULL,
+      difficulty TEXT NOT NULL,
+      gameMode TEXT NOT NULL, -- <-- AÑADE ESTA LÍNEA
+      timeInSeconds INTEGER NOT NULL,
+      attempts INTEGER NOT NULL,
+      date TEXT NOT NULL
+    )
+  ''');
   }
 
   // Método para insertar una nueva puntuación

@@ -2,7 +2,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'core/services/sound_manager.dart'; // <-- Importamos
+import 'core/services/sound_manager.dart';
 import 'presentation/screens/main_menu_screen.dart';
 
 Future<void> main() async {

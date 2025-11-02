@@ -1,13 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
-import '../../../data/providers/word_provider.dart';
-
-enum GameStatus { playing, win, lose, initial }
-
-enum LetterStatus { initial, notInWord, inWord, correctPosition }
+import '../../../core/constants/enums.dart';
 
 class GameState extends Equatable {
-  // 1. DATOS DEL JUEGO
   final GameStatus gameStatus;
   final String correctWord;
   final int wordSize;
@@ -16,6 +10,9 @@ class GameState extends Equatable {
   final int currentAttempt;
   final Difficulty difficulty;
   final DateTime? startTime;
+  final GameMode gameMode;
+  final Duration timerValue;
+  final Duration? initialTimeLimit;
 
   const GameState({
     required this.gameStatus,
@@ -26,6 +23,9 @@ class GameState extends Equatable {
     required this.currentAttempt,
     required this.difficulty,
     this.startTime,
+    required this.gameMode,
+    required this.timerValue,
+    this.initialTimeLimit,
   });
 
   factory GameState.initial() {
@@ -38,6 +38,9 @@ class GameState extends Equatable {
       currentAttempt: 0,
       difficulty: Difficulty.medio,
       startTime: null,
+      gameMode: GameMode.normal,
+      timerValue: Duration.zero,
+      initialTimeLimit: null,
     );
   }
 
@@ -50,6 +53,9 @@ class GameState extends Equatable {
     int? currentAttempt,
     Difficulty? difficulty,
     DateTime? startTime,
+    GameMode? gameMode,
+    Duration? timerValue,
+    Duration? initialTimeLimit,
   }) {
     return GameState(
       gameStatus: gameStatus ?? this.gameStatus,
@@ -59,14 +65,13 @@ class GameState extends Equatable {
       statuses: statuses ?? this.statuses,
       currentAttempt: currentAttempt ?? this.currentAttempt,
       difficulty: difficulty ?? this.difficulty,
-      startTime:  startTime ?? this.startTime,
+      startTime: startTime ?? this.startTime,
+      gameMode: gameMode ?? this.gameMode,
+      timerValue: timerValue ?? this.timerValue,
+      initialTimeLimit: initialTimeLimit ?? this.initialTimeLimit,
     );
   }
 
-  // 4. PROPIEDADES PARA EQUATABLE
-  // Equatable necesita saber qué propiedades debe comparar para determinar
-  // si dos instancias de GameState son iguales. Esto evita que la UI se
-  // redibuje innecesariamente.
   @override
   List<Object?> get props => [
     gameStatus,
@@ -77,5 +82,8 @@ class GameState extends Equatable {
     currentAttempt,
     difficulty,
     startTime,
+    gameMode,
+    timerValue,
+    initialTimeLimit,
   ];
 }

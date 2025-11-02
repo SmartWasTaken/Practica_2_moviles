@@ -1,6 +1,7 @@
 // En lib/data/repositories/game_repository.dart
 
 // --- AÑADE ESTAS DOS IMPORTACIONES ---
+import '../../core/constants/enums.dart';
 import '../../core/models/score.dart';
 import '../providers/database_provider.dart';
 import '../providers/word_provider.dart';

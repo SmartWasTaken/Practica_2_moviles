@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/enums.dart';
 import '../../data/providers/word_provider.dart';
 import '../routes/custom_page_route.dart';
 import 'settings_screen.dart';
 
 class InGameMenuScreen extends StatelessWidget {
   const InGameMenuScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,10 +29,6 @@ class InGameMenuScreen extends StatelessWidget {
               child: const Text('Reanudar'),
             ),
             const SizedBox(height: 20),
-
-            // --- CAMBIO 1: Botón "Dificultad" ahora se llama "Ajustes" ---
-            // La funcionalidad sigue siendo la misma: abre la pantalla de ajustes
-            // en modo "en-juego" para cambiar la dificultad.
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
@@ -51,10 +47,6 @@ class InGameMenuScreen extends StatelessWidget {
               child: const Text('Ajustes'), // <-- TEXTO CAMBIADO
             ),
             const SizedBox(height: 40),
-
-            // --- CAMBIO 2: Botón "Ajustes de Sonido" ha sido ELIMINADO ---
-
-            // Botón "Salir al Menú Principal" (sin cambios de funcionalidad)
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.error,

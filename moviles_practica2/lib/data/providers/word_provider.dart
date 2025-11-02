@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/services.dart';
-
-enum Difficulty { facil, medio, dificil }
+import '../../core/constants/enums.dart';
 
 class WordProvider {
   Future<Map<String, List<dynamic>>> _loadWords() async {

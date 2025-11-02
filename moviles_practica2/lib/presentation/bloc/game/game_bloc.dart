@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/constants/enums.dart';
 import '../../../core/models/score.dart';
-import '../../../data/providers/word_provider.dart';
 import '../../../data/repositories/game_repository.dart';
 import 'game_event.dart';
 import 'game_state.dart';
@@ -8,18 +9,29 @@ import 'game_state.dart';
 class GameBloc extends Bloc<GameEvent, GameState> {
   final GameRepository gameRepository;
   static const int maxAttempts = 8;
+  Timer? _timer;
 
   GameBloc({required this.gameRepository}) : super(GameState.initial()) {
     on<StartNewGame>(_onStartNewGame);
+    on<TimerTicked>(_onTimerTicked);
     on<LetterKeyPressed>(_onLetterKeyPressed);
     on<DeleteKeyPressed>(_onDeleteKeyPressed);
     on<SubmitWord>(_onSubmitWord);
   }
 
+  @override
+  Future<void> close() {
+    _timer?.cancel();
+    return super.close();
+  }
+
   void _onStartNewGame(StartNewGame event, Emitter<GameState> emit) async {
+    _timer?.cancel();
     final word = await gameRepository.getWord(event.difficulty);
     final List<List<String>> initialGuesses = List.generate(maxAttempts, (_) => []);
     final List<List<LetterStatus>> initialStatuses = List.generate(maxAttempts, (_) => List.filled(word.length, LetterStatus.initial));
+
+    final initialTime = event.gameMode == GameMode.timeTrial ? event.timeLimit! : Duration.zero;
 
     emit(state.copyWith(
       correctWord: word,
@@ -30,12 +42,38 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       currentAttempt: 0,
       difficulty: event.difficulty,
       startTime: DateTime.now(),
+      gameMode: event.gameMode,
+      timerValue: initialTime,
+      initialTimeLimit: event.gameMode == GameMode.timeTrial ? event.timeLimit : null,
     ));
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (state.gameStatus == GameStatus.playing) {
+        if (state.gameMode == GameMode.normal) {
+          add(TimerTicked(state.timerValue + const Duration(seconds: 1)));
+        } else if (state.gameMode == GameMode.timeTrial) {
+          add(TimerTicked(state.timerValue - const Duration(seconds: 1)));
+        }
+      }
+    });
+  }
+
+  void _onTimerTicked(TimerTicked event, Emitter<GameState> emit) {
+    if (state.gameStatus != GameStatus.playing) {
+      _timer?.cancel();
+      return;
+    }
+
+    if (state.gameMode == GameMode.timeTrial && event.duration.inSeconds <= 0) {
+      emit(state.copyWith(timerValue: Duration.zero, gameStatus: GameStatus.lose));
+      _timer?.cancel();
+    } else {
+      emit(state.copyWith(timerValue: event.duration));
+    }
   }
 
   void _onLetterKeyPressed(LetterKeyPressed event, Emitter<GameState> emit) {
-    if (state.gameStatus == GameStatus.playing &&
-        state.guesses[state.currentAttempt].length < state.wordSize) {
+    if (state.gameStatus == GameStatus.playing && state.guesses[state.currentAttempt].length < state.wordSize) {
       final List<List<String>> newGuesses = state.guesses.map((list) => List<String>.from(list)).toList();
       newGuesses[state.currentAttempt].add(event.letter);
       emit(state.copyWith(guesses: newGuesses));
@@ -43,8 +81,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _onDeleteKeyPressed(DeleteKeyPressed event, Emitter<GameState> emit) {
-    if (state.gameStatus == GameStatus.playing &&
-        state.guesses[state.currentAttempt].isNotEmpty) {
+    if (state.gameStatus == GameStatus.playing && state.guesses[state.currentAttempt].isNotEmpty) {
       final List<List<String>> newGuesses = state.guesses.map((list) => List<String>.from(list)).toList();
       newGuesses[state.currentAttempt].removeLast();
       emit(state.copyWith(guesses: newGuesses));
@@ -52,8 +89,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _onSubmitWord(SubmitWord event, Emitter<GameState> emit) {
-    if (state.gameStatus != GameStatus.playing ||
-        state.guesses[state.currentAttempt].length != state.wordSize) {
+    if (state.gameStatus != GameStatus.playing || state.guesses[state.currentAttempt].length != state.wordSize) {
       return;
     }
 
@@ -90,26 +126,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       newGameStatus = GameStatus.lose;
     }
 
-    if (newGameStatus == GameStatus.win) {
-      final endTime = DateTime.now();
-      final timeInSeconds = state.startTime != null
-          ? endTime.difference(state.startTime!).inSeconds
-          : 0;
+    if (newGameStatus == GameStatus.win || newGameStatus == GameStatus.lose) {
+      _timer?.cancel();
 
-      final scoreValue = _calculateScore(
-        state.difficulty,
-        state.currentAttempt + 1,
-        timeInSeconds,
-      );
+      if (newGameStatus == GameStatus.win) {
+        final endTime = DateTime.now();
+        final timeInSeconds = state.startTime != null ? endTime.difference(state.startTime!).inSeconds : 0;
+        final scoreValue = _calculateScore(state.difficulty, state.currentAttempt + 1, timeInSeconds);
 
-      final newScore = Score(
-        scoreValue: scoreValue,
-        difficulty: state.difficulty,
-        timeInSeconds: timeInSeconds,
-        attempts: state.currentAttempt + 1,
-        date: DateTime.now(),
-      );
-      gameRepository.saveScore(newScore);
+        final newScore = Score(
+          scoreValue: scoreValue,
+          difficulty: state.difficulty,
+          gameMode: state.gameMode,
+          timeInSeconds: timeInSeconds,
+          attempts: state.currentAttempt + 1,
+          date: DateTime.now(),
+        );
+        gameRepository.saveScore(newScore);
+      }
     }
 
     emit(state.copyWith(
@@ -141,10 +175,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         timeBonusMultiplier = 15;
         break;
     }
-
     final attemptBonus = (maxAttempts - attempts) * attemptBonusMultiplier;
     final timeBonus = (300 - timeInSeconds).clamp(0, 300) * timeBonusMultiplier;
-
     return baseScore + attemptBonus + timeBonus;
   }
 }
