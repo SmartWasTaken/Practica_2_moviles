@@ -5,10 +5,12 @@ import '../../../core/models/score.dart';
 import '../../../data/repositories/game_repository.dart';
 import 'game_event.dart';
 import 'game_state.dart';
+import 'dart:math';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   final GameRepository gameRepository;
   static const int maxAttempts = 8;
+  static const int maxHints = 2;
   Timer? _timer;
 
   GameBloc({required this.gameRepository}) : super(GameState.initial()) {
@@ -17,6 +19,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<LetterKeyPressed>(_onLetterKeyPressed);
     on<DeleteKeyPressed>(_onDeleteKeyPressed);
     on<SubmitWord>(_onSubmitWord);
+    on<HintRequested>(_onHintRequested);
   }
 
   @override
@@ -45,6 +48,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       gameMode: event.gameMode,
       timerValue: initialTime,
       initialTimeLimit: event.gameMode == GameMode.timeTrial ? event.timeLimit : null,
+      hintedIndices: [],
+      hintsUsed: 0,
     ));
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -178,5 +183,59 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final attemptBonus = (maxAttempts - attempts) * attemptBonusMultiplier;
     final timeBonus = (300 - timeInSeconds).clamp(0, 300) * timeBonusMultiplier;
     return baseScore + attemptBonus + timeBonus;
+  }
+
+  void _onHintRequested(HintRequested event, Emitter<GameState> emit) {
+    if (state.gameStatus != GameStatus.playing) return;
+    if (state.currentAttempt >= maxAttempts - 1) return;
+    if (state.hintsUsed >= maxHints) return;
+
+    final correctWord = state.correctWord.split('');
+    final hintedIndices = state.hintedIndices;
+
+    final Set<int> alreadyGreenIndices = {};
+    for (int i = 0; i < state.currentAttempt; i++) {
+      for (int j = 0; j < state.statuses[i].length; j++) {
+        if (state.statuses[i][j] == LetterStatus.correctPosition) {
+          alreadyGreenIndices.add(j);
+        }
+      }
+    }
+
+    final allIndices = List.generate(correctWord.length, (i) => i);
+    final availableHintIndices = allIndices.where((i) =>
+    !hintedIndices.contains(i) &&
+        !alreadyGreenIndices.contains(i)
+    ).toList();
+
+    if (availableHintIndices.isEmpty) {
+      return;
+    }
+
+    final random = Random();
+    final indexToReveal = availableHintIndices[random.nextInt(availableHintIndices.length)];
+    final letterToReveal = correctWord[indexToReveal];
+
+    final newHintedGuess = List.filled(state.wordSize, '');
+    final newHintedStatus = List.filled(state.wordSize, LetterStatus.initial);
+
+    newHintedGuess[indexToReveal] = letterToReveal;
+    newHintedStatus[indexToReveal] = LetterStatus.correctPosition;
+
+    final newGuesses = state.guesses.map((list) => List<String>.from(list)).toList();
+    final newStatuses = state.statuses.map((list) => List<LetterStatus>.from(list)).toList();
+
+    newGuesses[state.currentAttempt] = newHintedGuess;
+    newStatuses[state.currentAttempt] = newHintedStatus;
+
+    final newHintedIndices = List<int>.from(hintedIndices)..add(indexToReveal);
+
+    emit(state.copyWith(
+      guesses: newGuesses,
+      statuses: newStatuses,
+      hintedIndices: newHintedIndices,
+      currentAttempt: state.currentAttempt + 1,
+      hintsUsed: state.hintsUsed + 1,
+    ));
   }
 }

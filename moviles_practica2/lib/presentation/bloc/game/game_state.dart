@@ -13,6 +13,8 @@ class GameState extends Equatable {
   final GameMode gameMode;
   final Duration timerValue;
   final Duration? initialTimeLimit;
+  final List<int> hintedIndices;
+  final int hintsUsed;
 
   const GameState({
     required this.gameStatus,
@@ -26,6 +28,8 @@ class GameState extends Equatable {
     required this.gameMode,
     required this.timerValue,
     this.initialTimeLimit,
+    required this.hintedIndices,
+    required this.hintsUsed,
   });
 
   factory GameState.initial() {
@@ -41,6 +45,8 @@ class GameState extends Equatable {
       gameMode: GameMode.normal,
       timerValue: Duration.zero,
       initialTimeLimit: null,
+      hintedIndices: [],
+      hintsUsed: 0,
     );
   }
 
@@ -56,6 +62,8 @@ class GameState extends Equatable {
     GameMode? gameMode,
     Duration? timerValue,
     Duration? initialTimeLimit,
+    List<int>? hintedIndices,
+    int? hintsUsed,
   }) {
     return GameState(
       gameStatus: gameStatus ?? this.gameStatus,
@@ -69,6 +77,8 @@ class GameState extends Equatable {
       gameMode: gameMode ?? this.gameMode,
       timerValue: timerValue ?? this.timerValue,
       initialTimeLimit: initialTimeLimit ?? this.initialTimeLimit,
+      hintedIndices: hintedIndices ?? this.hintedIndices,
+      hintsUsed: hintsUsed ?? this.hintsUsed,
     );
   }
 
@@ -85,5 +95,7 @@ class GameState extends Equatable {
     gameMode,
     timerValue,
     initialTimeLimit,
+    hintedIndices,
+    hintsUsed,
   ];
 }

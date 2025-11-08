@@ -3,6 +3,7 @@ import '../routes/custom_page_route.dart';
 import 'game_mode_selection_screen.dart';
 import 'ranking_screen.dart';
 import 'settings_screen.dart';
+import 'tutorial_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
@@ -17,7 +18,7 @@ class MainMenuScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wordle - Menú Principal'),
+        title: const Text('Palazle - Menú Principal'),
         centerTitle: true,
       ),
       body: Center(
@@ -55,6 +56,16 @@ class MainMenuScreen extends StatelessWidget {
                   );
                 },
                 child: const Text('Ajustes'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  Navigator.of(context).push(
+                    FadePageRoute(page: const TutorialScreen()),
+                  );
+                },
+                child: const Text('Tutorial'),
               ),
             ],
           ),

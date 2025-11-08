@@ -42,3 +42,5 @@ class LetterKeyPressed extends GameEvent {
 class DeleteKeyPressed extends GameEvent {}
 
 class SubmitWord extends GameEvent {}
+
+class HintRequested extends GameEvent {}

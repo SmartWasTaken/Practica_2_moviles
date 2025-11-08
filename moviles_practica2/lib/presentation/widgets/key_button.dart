@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+enum KeyType { letter, confirm, delete }
 class KeyButton extends StatelessWidget {
   final String letter;
   final IconData? icon;
   final VoidCallback onTap;
   final int flex;
+  final KeyType keyType;
 
   const KeyButton({
     super.key,
@@ -12,7 +14,20 @@ class KeyButton extends StatelessWidget {
     required this.onTap,
     this.icon,
     this.flex = 1,
+    this.keyType = KeyType.letter,
   });
+
+  Color _getBackgroundColor(BuildContext context) {
+    switch (keyType) {
+      case KeyType.confirm:
+        return Colors.green.shade800;
+      case KeyType.delete:
+        return Colors.red.shade800;
+      case KeyType.letter:
+      default:
+        return Colors.grey.shade800;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +36,7 @@ class KeyButton extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(2.0),
         child: Material(
-          color: Colors.grey.shade800,
+          color: _getBackgroundColor(context),
           borderRadius: BorderRadius.circular(4),
           child: InkWell(
             onTap: onTap,

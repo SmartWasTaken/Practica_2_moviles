@@ -8,7 +8,7 @@ import '../routes/custom_page_route.dart';
 import '../widgets/game_grid.dart';
 import '../widgets/game_keyboard.dart';
 import 'in_game_menu_screen.dart';
-import 'ranking_screen.dart'; // <-- AÑADIMOS LA IMPORTACIÓN PARA EL RANKING
+import 'ranking_screen.dart';
 
 class GameScreen extends StatelessWidget {
   const GameScreen({super.key});
@@ -30,6 +30,99 @@ class GameScreen extends StatelessWidget {
     }
   }
 
+  void _showHintConfirmation(BuildContext context) {
+    final bloc = context.read<GameBloc>();
+    final state = bloc.state;
+
+    if (state.hintsUsed >= GameBloc.maxHints) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('No te quedan pistas'),
+          content: const Text('Has usado tus 2 pistas. ¡Suerte adivinando!'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Entendido'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    if (state.currentAttempt >= GameBloc.maxAttempts - 1) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Pista no disponible'),
+          content: const Text('No puedes usar una pista en tu último intento.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Entendido'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    final Set<int> alreadyGreenIndices = {};
+    for (int i = 0; i < state.currentAttempt; i++) {
+      for (int j = 0; j < state.statuses[i].length; j++) {
+        if (state.statuses[i][j] == LetterStatus.correctPosition) {
+          alreadyGreenIndices.add(j);
+        }
+      }
+    }
+    final allIndices = List.generate(state.correctWord.length, (i) => i);
+    final availableHintIndices = allIndices.where((i) =>
+    !state.hintedIndices.contains(i) &&
+        !alreadyGreenIndices.contains(i)
+    ).toList();
+
+    if (availableHintIndices.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Pista no disponible'),
+          content: const Text('¡No quedan pistas útiles por dar! Ya has encontrado (o te hemos dado) todas las letras en su posición correcta.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Entendido'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('¿Usar una pista?'),
+        content: Text(
+          'Esto usará 1 de tus ${GameBloc.maxAttempts} intentos.\n\nSe revelará una letra correcta. ¿Estás seguro?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              bloc.add(HintRequested());
+            },
+            child: const Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -48,7 +141,7 @@ class GameScreen extends StatelessWidget {
               builder: (dialogContext) {
                 return AlertDialog(
                   title: Text(
-                    state.gameStatus == GameStatus.win ? '¡Has Ganado!' : '¡Has Perdido!',
+                    state.gameStatus == GameStatus.win ? '¡Has ganado!' : '¡Has perdido!',
                   ),
                   content: Text('La palabra correcta era: ${state.correctWord}'),
                   actions: <Widget>[
@@ -92,7 +185,7 @@ class GameScreen extends StatelessWidget {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Wordle'),
+            title: const Text('Palazle'),
             centerTitle: true,
             automaticallyImplyLeading: false,
             leading: IconButton(
@@ -136,6 +229,22 @@ class GameScreen extends StatelessWidget {
                               wordSize: state.wordSize,
                               guesses: state.guesses,
                               statuses: state.statuses,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: BlocBuilder<GameBloc, GameState>(
+                              builder: (context, state) {
+                                final hintsLeft = GameBloc.maxHints - state.hintsUsed;
+                                return TextButton.icon(
+                                  onPressed: () => _showHintConfirmation(context),
+                                  icon: const Icon(Icons.lightbulb_outline),
+                                  label: Text('PISTA ($hintsLeft / ${GameBloc.maxHints})'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                  ),
+                                );
+                              },
                             ),
                           ),
                           const Padding(
