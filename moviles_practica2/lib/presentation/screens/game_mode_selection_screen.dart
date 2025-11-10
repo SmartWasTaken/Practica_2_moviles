@@ -10,26 +10,20 @@ import 'game_screen.dart';
 
 class GameModeSelectionScreen extends StatefulWidget {
   const GameModeSelectionScreen({super.key});
-
   @override
   State<GameModeSelectionScreen> createState() => _GameModeSelectionScreenState();
 }
-
 class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
-  // Variable para recordar la duración seleccionada para el modo Contrarreloj.
   Duration _selectedTime = const Duration(minutes: 1);
 
-  // Función de ayuda para no repetir código. Lanza el juego con los parámetros correctos.
   void _startGame(BuildContext context, GameMode mode, {Duration? timeLimit}) async {
-    // Necesitamos el repositorio para obtener la dificultad guardada.
     final preferencesRepository = PreferencesRepository();
     final difficulty = await preferencesRepository.getDifficulty();
 
-    if (mounted) { // Comprobación de seguridad después de una operación asíncrona
+    if (mounted) {
       Navigator.of(context).push(
         FadePageRoute(
           page: BlocProvider(
-            // El GameBloc se crea justo antes de entrar a la pantalla de juego.
             create: (context) => GameBloc(gameRepository: GameRepository())
               ..add(StartNewGame(
                 difficulty: difficulty,
@@ -42,7 +36,6 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +45,6 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // --- TARJETA PARA EL MODO NORMAL ---
           Card(
             child: ListTile(
               leading: const Icon(Icons.play_circle_outline, size: 40),
@@ -62,8 +54,24 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
             ),
           ),
           const SizedBox(height: 16),
-
-          // --- TARJETA PARA EL MODO CONTRARRELOJ ---
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.emoji_events_outlined, size: 40, color: Colors.redAccent),
+              title: const Text('Competitivo', style: TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: const Text('Modo normal, pero sin pistas. ¡Demuestra lo que vales!'),
+              onTap: () => _startGame(context, GameMode.competitive),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.looks_5_outlined, size: 40, color: Colors.cyanAccent),
+              title: const Text('Números', style: TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: const Text('Adivina un número secreto en lugar de una palabra.'),
+              onTap: () => _startGame(context, GameMode.numbers),
+            ),
+          ),
+          const SizedBox(height: 16),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -75,7 +83,6 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
                     title: Text('Contrarreloj', style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text('Adivina la palabra antes de que se acabe el tiempo.'),
                   ),
-                  // SegmentedButton es un widget moderno perfecto para este tipo de selección.
                   SegmentedButton<Duration>(
                     segments: const [
                       ButtonSegment(value: Duration(minutes: 1), label: Text('1 min')),
@@ -98,15 +105,13 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
               ),
             ),
           ),
-
-          // --- TARJETA PARA EL MODO EMOJIS (Deshabilitado por ahora) ---
           Card(
             color: Theme.of(context).colorScheme.surface.withOpacity(0.5), // Color atenuado
             child: ListTile(
               leading: Icon(Icons.emoji_emotions_outlined, size: 40, color: Colors.grey.shade600),
               title: Text('Emojis', style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.bold)),
               subtitle: Text('Próximamente...', style: TextStyle(color: Colors.grey.shade600)),
-              onTap: null, // onTap: null deshabilita el ListTile
+              onTap: null,
             ),
           ),
         ],

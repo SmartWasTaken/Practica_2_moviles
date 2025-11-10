@@ -7,6 +7,7 @@ import '../bloc/game/game_state.dart';
 import '../routes/custom_page_route.dart';
 import '../widgets/game_grid.dart';
 import '../widgets/game_keyboard.dart';
+import '../widgets/number_keyboard.dart';
 import 'in_game_menu_screen.dart';
 import 'ranking_screen.dart';
 
@@ -164,7 +165,6 @@ class GameScreen extends StatelessWidget {
                       },
                     ),
 
-                    // --- Botón "JUGAR DE NUEVO" (sin cambios) ---
                     TextButton(
                       child: const Text('JUGAR DE NUEVO'),
                       onPressed: () {
@@ -231,25 +231,28 @@ class GameScreen extends StatelessWidget {
                               statuses: state.statuses,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: BlocBuilder<GameBloc, GameState>(
-                              builder: (context, state) {
-                                final hintsLeft = GameBloc.maxHints - state.hintsUsed;
-                                return TextButton.icon(
-                                  onPressed: () => _showHintConfirmation(context),
-                                  icon: const Icon(Icons.lightbulb_outline),
-                                  label: Text('PISTA ($hintsLeft / ${GameBloc.maxHints})'),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                  ),
-                                );
-                              },
+                          if (state.gameMode != GameMode.competitive && state.gameMode != GameMode.numbers)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: BlocBuilder<GameBloc, GameState>(
+                                builder: (context, state) {
+                                  final hintsLeft = GameBloc.maxHints - state.hintsUsed;
+                                  return TextButton.icon(
+                                    onPressed: () => _showHintConfirmation(context),
+                                    icon: const Icon(Icons.lightbulb_outline),
+                                    label: Text('PISTA ($hintsLeft / ${GameBloc.maxHints})'),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-                            child: GameKeyboard(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                            child: state.gameMode == GameMode.numbers
+                                ? const NumberKeyboard()
+                                : const GameKeyboard(),
                           ),
                         ],
                       ),

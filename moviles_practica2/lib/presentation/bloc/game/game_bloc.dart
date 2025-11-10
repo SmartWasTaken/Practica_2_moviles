@@ -30,7 +30,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   void _onStartNewGame(StartNewGame event, Emitter<GameState> emit) async {
     _timer?.cancel();
-    final word = await gameRepository.getWord(event.difficulty);
+    String word;
+    if (event.gameMode == GameMode.numbers) {
+      word = await gameRepository.getNumber(event.difficulty);
+    } else {
+      word = await gameRepository.getWord(event.difficulty);
+    }
+
     final List<List<String>> initialGuesses = List.generate(maxAttempts, (_) => []);
     final List<List<LetterStatus>> initialStatuses = List.generate(maxAttempts, (_) => List.filled(word.length, LetterStatus.initial));
 
@@ -54,9 +60,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.gameStatus == GameStatus.playing) {
-        if (state.gameMode == GameMode.normal) {
+        if (state.gameMode == GameMode.normal ||
+            state.gameMode == GameMode.competitive ||
+            state.gameMode == GameMode.numbers) {
           add(TimerTicked(state.timerValue + const Duration(seconds: 1)));
-        } else if (state.gameMode == GameMode.timeTrial) {
+        }
+        else if (state.gameMode == GameMode.timeTrial) {
           add(TimerTicked(state.timerValue - const Duration(seconds: 1)));
         }
       }
@@ -186,6 +195,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _onHintRequested(HintRequested event, Emitter<GameState> emit) {
+    if (state.gameMode == GameMode.competitive) return;
     if (state.gameStatus != GameStatus.playing) return;
     if (state.currentAttempt >= maxAttempts - 1) return;
     if (state.hintsUsed >= maxHints) return;
