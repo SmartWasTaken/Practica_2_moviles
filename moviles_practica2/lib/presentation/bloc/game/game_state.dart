@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../core/constants/enums.dart';
+import '../../../core/models/emoji_puzzle.dart';
 
 class GameState extends Equatable {
   final GameStatus gameStatus;
@@ -16,6 +17,9 @@ class GameState extends Equatable {
   final List<int> hintedIndices;
   final int hintsUsed;
 
+  final EmojiPuzzle? currentPuzzle;
+  final List<String> visibleEmojis;
+
   const GameState({
     required this.gameStatus,
     required this.correctWord,
@@ -30,6 +34,8 @@ class GameState extends Equatable {
     this.initialTimeLimit,
     required this.hintedIndices,
     required this.hintsUsed,
+    this.currentPuzzle,
+    required this.visibleEmojis,
   });
 
   factory GameState.initial() {
@@ -47,6 +53,8 @@ class GameState extends Equatable {
       initialTimeLimit: null,
       hintedIndices: [],
       hintsUsed: 0,
+      currentPuzzle: null,
+      visibleEmojis: [],
     );
   }
 
@@ -64,6 +72,8 @@ class GameState extends Equatable {
     Duration? initialTimeLimit,
     List<int>? hintedIndices,
     int? hintsUsed,
+    EmojiPuzzle? currentPuzzle,
+    List<String>? visibleEmojis,
   }) {
     return GameState(
       gameStatus: gameStatus ?? this.gameStatus,
@@ -79,6 +89,8 @@ class GameState extends Equatable {
       initialTimeLimit: initialTimeLimit ?? this.initialTimeLimit,
       hintedIndices: hintedIndices ?? this.hintedIndices,
       hintsUsed: hintsUsed ?? this.hintsUsed,
+      currentPuzzle: currentPuzzle ?? this.currentPuzzle,
+      visibleEmojis: visibleEmojis ?? this.visibleEmojis,
     );
   }
 
@@ -97,5 +109,7 @@ class GameState extends Equatable {
     initialTimeLimit,
     hintedIndices,
     hintsUsed,
+    currentPuzzle,
+    visibleEmojis,
   ];
 }

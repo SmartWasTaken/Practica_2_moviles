@@ -1,0 +1,233 @@
+{
+  "facil": [
+    {
+      "name": "MARIO",
+      "theme": "Juegos",
+      "emojis": ["🍄", "🐢", "⭐", "👸"]
+    },
+    {
+      "name": "SONIC",
+      "theme": "Juegos",
+      "emojis": ["🦔", "💨", "🔵", "💍"]
+    },
+    {
+      "name": "SIMS",
+      "theme": "Juegos",
+      "emojis": ["🏠", "💎", "🗣️", "🔥"]
+    },
+    {
+      "name": "FIFA",
+      "theme": "Juegos",
+      "emojis": ["⚽", "🏟️", "🥅", "🎮"]
+    },
+    {
+      "name": "HALO",
+      "theme": "Juegos",
+      "emojis": ["🔫", "🟢", "👽", "🚀"]
+    },
+    {
+      "name": "COCO",
+      "theme": "Pelis",
+      "emojis": ["🎸", "💀", "👵", "🇲🇽"]
+    },
+    {
+      "name": "CARS",
+      "theme": "Pelis",
+      "emojis": ["🚗", "🏁", "⚡", "🛣️"]
+    },
+    {
+      "name": "THOR",
+      "theme": "Pelis",
+      "emojis": ["🔨", "⚡", "🦸", "🧔"]
+    },
+    {
+      "name": "TROY",
+      "theme": "Pelis",
+      "emojis": ["🐴", "🪵", "⚔️", "🏰"]
+    },
+    {
+      "name": "DUNE",
+      "theme": "Pelis",
+      "emojis": ["🏜️", "🐛", "🧂", "👁️"]
+    },
+    {
+      "name": "GLEE",
+      "theme": "Series",
+      "emojis": ["🎤", "🏫", "🎶", "🏈"]
+    },
+    {
+      "name": "LOST",
+      "theme": "Series",
+      "emojis": ["✈️", "🏝️", "🐻", "💨"]
+    },
+    {
+      "name": "DARK",
+      "theme": "Series",
+      "emojis": ["🌧️", "🧥", "⏳", "☢️"]
+    },
+    {
+      "name": "YOU",
+      "theme": "Series",
+      "emojis": ["🧢", "📚", "🔪"]
+    },
+    {
+      "name": "BEAR",
+      "theme": "Series",
+      "emojis": ["👨‍🍳", "🔪", "🥪", "🐻"]
+    }
+  ],
+  "medio": [
+    {
+      "name": "ZELDA",
+      "theme": "Juegos",
+      "emojis": ["🧝", "🗡️", "🛡️", "👸", "🔺"]
+    },
+    {
+      "name": "TETRIS",
+      "theme": "Juegos",
+      "emojis": ["🧱", "🔽", "🇷🇺", "🎶", "🎮"]
+    },
+    {
+      "name": "PORTAL",
+      "theme": "Juegos",
+      "emojis": ["🍰", "🟠", "🔵", "🤖", "🔫"]
+    },
+    {
+      "name": "DOOM",
+      "theme": "Juegos",
+      "emojis": ["👹", "🔫", "🩸", "🔥", "🎸"]
+    },
+    {
+      "name": "CIVIL",
+      "theme": "Juegos",
+      "emojis": ["🌍", "🏛️", "⚔️", "🚀", "⏳"]
+    },
+    {
+      "name": "SHREK",
+      "theme": "Pelis",
+      "emojis": ["👹", "🫏", "🏰", "🟢", "👸"]
+    },
+    {
+      "name": "JOKER",
+      "theme": "Pelis",
+      "emojis": ["🤡", "🃏", "🤣", "🔫", "stairs"]
+    },
+    {
+      "name": "ROCKY",
+      "theme": "Pelis",
+      "emojis": ["🥊", "🥩", "Eye", "🐅", "🏃"]
+    },
+    {
+      "name": "ALIEN",
+      "theme": "Pelis",
+      "emojis": ["👽", "🚀", "🥚", "cat", "😱"]
+    },
+    {
+      "name": "SEVEN",
+      "theme": "Pelis",
+      "emojis": ["📦", "🌧️", "🕵️", "7️⃣", "🔫"]
+    },
+    {
+      "name": "LUPIN",
+      "theme": "Series",
+      "emojis": ["🎩", "💎", "🇫🇷", "🕵️", "🏛️"]
+    },
+    {
+      "name": "SUITS",
+      "theme": "Series",
+      "emojis": ["👔", "💼", "⚖️", "🏢", "🤝"]
+    },
+    {
+      "name": "ELITE",
+      "theme": "Series",
+      "emojis": ["🏫", "🏆", "🔪", "🩸", "🇪🇸"]
+    },
+    {
+      "name": "POKER",
+      "theme": "Series",
+      "emojis": ["🃏", "🕶️", "💰", "🎰", "🍸"]
+    },
+    {
+      "name": "FLASH",
+      "theme": "Series",
+      "emojis": ["⚡", "🏃", "🔴", "🕰️", "🔬"]
+    }
+  ],
+  "dificil": [
+    {
+      "name": "SKYRIM",
+      "theme": "Juegos",
+      "emojis": ["🐉", "🗣️", "❄️", "⚔️", "🛡️", "🏔️"]
+    },
+    {
+      "name": "LOL",
+      "theme": "Juegos",
+      "emojis": ["🏰", "🔥", "🧙", "🏹", "⚔️", "🤬"]
+    },
+    {
+      "name": "FALLOUT",
+      "theme": "Juegos",
+      "emojis": ["☢️", "🏚️", "🔫", "🐕", "🥤", "🔵"]
+    },
+    {
+      "name": "DIABLO",
+      "theme": "Juegos",
+      "emojis": ["😈", "🔥", "⚔️", "🩸", "💀", "💎"]
+    },
+    {
+      "name": "ROBLOX",
+      "theme": "Juegos",
+      "emojis": ["🟥", "👷", "🧱", "🕹️", "💰", "🌎"]
+    },
+    {
+      "name": "AVATAR",
+      "theme": "Pelis",
+      "emojis": ["🔵", "🌲", "🏹", "👽", "🚁", "tail"]
+    },
+    {
+      "name": "MATRIX",
+      "theme": "Pelis",
+      "emojis": ["💊", "🕶️", "💻", "🟢", "🏃", "📞"]
+    },
+    {
+      "name": "SCREAM",
+      "theme": "Pelis",
+      "emojis": ["👻", "🔪", "📞", "😱", "🏠", "🍿"]
+    },
+    {
+      "name": "BARBIE",
+      "theme": "Pelis",
+      "emojis": ["👱‍♀️", "🎀", "👠", "🚙", "🏠", "💗"]
+    },
+    {
+      "name": "FROZEN",
+      "theme": "Pelis",
+      "emojis": ["❄️", "⛄", "👸", "🦌", "🏰", "🎶"]
+    },
+    {
+      "name": "FRIENDS",
+      "theme": "Series",
+      "emojis": ["☕", "🛋️", "👩‍🍳", "👨‍🏫", "🎸", "🦞"]
+    },
+    {
+      "name": "OFFICE",
+      "theme": "Series",
+      "emojis": ["📄", "💼", "📠", "👔", "☕", "🥴"]
+    },
+    {
+      "name": "VIKINGS",
+      "theme": "Series",
+      "emojis": ["🪓", "🛡️", "⛵", "🧔", "⚔️", "🇬🇧"]
+    },
+    {
+      "name": "NARCOS",
+      "theme": "Series",
+      "emojis": ["💰", "💊", "🇨🇴", "🚔", "🔫", "Mustache"]
+    },
+    {
+      "name": "SUCCESS",
+      "theme": "Series",
+      "emojis": ["💼", "💰", "👨‍👧‍👦", "🗽", "🚁", "📺"]
+    }
+  ]
+}

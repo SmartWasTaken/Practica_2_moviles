@@ -3,16 +3,21 @@ import '../providers/database_provider.dart';
 import '../providers/word_provider.dart';
 import '../providers/number_provider.dart';
 import '../../core/constants/enums.dart';
+import '../providers/emoji_provider.dart';
+import '../../core/models/emoji_puzzle.dart';
 
 class GameRepository {
   final WordProvider _wordProvider;
   final NumberProvider _numberProvider;
+  final EmojiProvider _emojiProvider;
   final DatabaseProvider _dbProvider = DatabaseProvider.instance;
   GameRepository({
     WordProvider? wordProvider,
     NumberProvider? numberProvider,
+    EmojiProvider? emojiProvider,
   })  : _wordProvider = wordProvider ?? WordProvider(),
-        _numberProvider = numberProvider ?? NumberProvider();
+        _numberProvider = numberProvider ?? NumberProvider(),
+        _emojiProvider = emojiProvider ?? EmojiProvider();
   Future<String> getWord(Difficulty difficulty) async {
     return _wordProvider.getWord(difficulty);
   }
@@ -24,5 +29,8 @@ class GameRepository {
   }
   Future<List<Score>> getRanking() async {
     return _dbProvider.getScores();
+  }
+  Future<EmojiPuzzle> getEmojiPuzzle(Difficulty difficulty) async {
+    return _emojiProvider.getEmojiPuzzle(difficulty);
   }
 }

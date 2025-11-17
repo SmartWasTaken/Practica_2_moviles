@@ -1,4 +1,3 @@
-// En lib/main.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -6,22 +5,19 @@ import 'core/services/sound_manager.dart';
 import 'presentation/screens/main_menu_screen.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Siempre primero
+  WidgetsFlutterBinding.ensureInitialized();
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
 
-  // Inicializamos nuestro SoundManager
   await SoundManager.instance.init();
-  // Empezamos la música del menú
-  SoundManager.instance.playMusic('audio/music_loop.mp3');
+  // SoundManager.instance.playMusic();
 
   runApp(const WordleApp());
 }
 
-// Convertimos WordleApp en un StatefulWidget para gestionar el ciclo de vida
 class WordleApp extends StatefulWidget {
   const WordleApp({super.key});
 

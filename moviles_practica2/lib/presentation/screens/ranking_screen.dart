@@ -6,7 +6,6 @@ import '../../data/repositories/game_repository.dart';
 
 class RankingScreen extends StatefulWidget {
   const RankingScreen({super.key});
-
   @override
   State<RankingScreen> createState() => _RankingScreenState();
 }
@@ -47,6 +46,10 @@ class _RankingScreenState extends State<RankingScreen> {
         chipColor = Colors.purple.shade800;
         modeName = 'Emojis';
         break;
+      case GameMode.random:
+        chipColor = Colors.grey.shade700;
+        modeName = 'Aleatorio';
+        break;
     }
     return Chip(
       label: Text(modeName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -67,51 +70,54 @@ class _RankingScreenState extends State<RankingScreen> {
             label: const Text('Overall'),
             selected: _selectedFilter == null,
             onSelected: (bool selected) {
-              setState(() {
-                _selectedFilter = null;
-              });
+              setState(() { _selectedFilter = null; });
             },
           ),
           FilterChip(
             label: const Text('Normal'),
             selected: _selectedFilter == GameMode.normal,
             onSelected: (bool selected) {
-              setState(() {
-                _selectedFilter = GameMode.normal;
-              });
+              setState(() { _selectedFilter = GameMode.normal; });
             },
           ),
           FilterChip(
             label: const Text('Competitivo'),
             selected: _selectedFilter == GameMode.competitive,
             onSelected: (bool selected) {
-              setState(() {
-                _selectedFilter = GameMode.competitive;
-              });
+              setState(() { _selectedFilter = GameMode.competitive; });
             },
           ),
           FilterChip(
             label: const Text('Contrarreloj'),
             selected: _selectedFilter == GameMode.timeTrial,
             onSelected: (bool selected) {
-              setState(() {
-                _selectedFilter = GameMode.timeTrial;
-              });
+              setState(() { _selectedFilter = GameMode.timeTrial; });
             },
           ),
           FilterChip(
             label: const Text('Números'),
             selected: _selectedFilter == GameMode.numbers,
             onSelected: (bool selected) {
-              setState(() {
-                _selectedFilter = GameMode.numbers;
-              });
+              setState(() { _selectedFilter = GameMode.numbers; });
             },
+          ),
+          FilterChip(
+            label: const Text('Emojis'),
+            selected: _selectedFilter == GameMode.emojis,
+            onSelected: (bool selected) {
+              setState(() { _selectedFilter = GameMode.emojis; });
+            },
+          ),
+          FilterChip(
+            label: Text('Aleatorio', style: TextStyle(color: Colors.grey.shade600)),
+            selected: _selectedFilter == GameMode.random,
+            onSelected: null,
           ),
         ],
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,13 +147,16 @@ class _RankingScreenState extends State<RankingScreen> {
                     ),
                   );
                 }
+
                 final allScores = snapshot.data!;
                 final List<Score> filteredScores;
+
                 if (_selectedFilter == null) {
                   filteredScores = allScores;
                 } else {
                   filteredScores = allScores.where((score) => score.gameMode == _selectedFilter).toList();
                 }
+
                 if (filteredScores.isEmpty) {
                   return const Center(
                     child: Text(
@@ -157,6 +166,7 @@ class _RankingScreenState extends State<RankingScreen> {
                     ),
                   );
                 }
+
                 return ListView.builder(
                   itemCount: filteredScores.length,
                   itemBuilder: (context, index) {

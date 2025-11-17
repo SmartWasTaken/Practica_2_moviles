@@ -106,10 +106,19 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
             ),
           ),
           Card(
-            color: Theme.of(context).colorScheme.surface.withOpacity(0.5), // Color atenuado
             child: ListTile(
-              leading: Icon(Icons.emoji_emotions_outlined, size: 40, color: Colors.grey.shade600),
-              title: Text('Emojis', style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.bold)),
+              leading: Icon(Icons.emoji_emotions_outlined, size: 40, color: Colors.purpleAccent),
+              title: Text('Emojis', style: TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('Adivina la palabra/película/juego a partir de emojis.'),
+              onTap: () => _startGame(context, GameMode.emojis),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+            child: ListTile(
+              leading: Icon(Icons.shuffle, size: 40, color: Colors.grey.shade600),
+              title: Text('Aleatorio', style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.bold)),
               subtitle: Text('Próximamente...', style: TextStyle(color: Colors.grey.shade600)),
               onTap: null,
             ),

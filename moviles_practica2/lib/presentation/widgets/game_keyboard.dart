@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/services/sound_manager.dart';
 import '../bloc/game/game_bloc.dart';
 import '../bloc/game/game_event.dart';
 import 'key_button.dart';
@@ -48,7 +49,10 @@ class GameKeyboard extends StatelessWidget {
         }
         return KeyButton(
           letter: letter,
-          onTap: () => bloc.add(LetterKeyPressed(letter: letter)),
+          onTap: () {
+            //SoundManager.instance.playSfx('key_press.mp3');
+            bloc.add(LetterKeyPressed(letter: letter));
+          },
         );
       }).toList(),
     );

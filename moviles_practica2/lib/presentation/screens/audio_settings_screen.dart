@@ -1,4 +1,3 @@
-// En lib/presentation/screens/audio_settings_screen.dart
 import 'package:flutter/material.dart';
 import '../../core/services/sound_manager.dart';
 
@@ -10,14 +9,17 @@ class AudioSettingsScreen extends StatefulWidget {
 }
 
 class _AudioSettingsScreenState extends State<AudioSettingsScreen> {
-  // Obtenemos la instancia de nuestro Singleton
   final SoundManager _soundManager = SoundManager.instance;
-  late double _currentVolume;
+  late double _musicVolume;
+  late double _sfxVolume;
+  late int _selectedTrackIndex;
 
   @override
   void initState() {
     super.initState();
-    _currentVolume = _soundManager.currentVolume;
+    _musicVolume = _soundManager.musicVolume;
+    _sfxVolume = _soundManager.sfxVolume;
+    _selectedTrackIndex = _soundManager.currentTrackIndex;
   }
 
   @override
@@ -26,28 +28,75 @@ class _AudioSettingsScreenState extends State<AudioSettingsScreen> {
       appBar: AppBar(
         title: const Text('Ajustes de Sonido'),
       ),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.volume_up),
-                Expanded(
-                  child: Slider(
-                    value: _currentVolume,
-                    onChanged: (newVolume) {
-                      setState(() {
-                        _currentVolume = newVolume;
-                      });
-                      _soundManager.setVolume(newVolume);
-                    },
-                  ),
+        children: [
+          const Text(
+            'Música',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          Row(
+            children: [
+              const Icon(Icons.music_note),
+              Expanded(
+                child: Slider(
+                  value: _musicVolume,
+                  onChanged: (newVolume) {
+                    setState(() {
+                      _musicVolume = newVolume;
+                    });
+                    _soundManager.setMusicVolume(newVolume);
+                  },
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Efectos de Sonido (SFX)',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          Row(
+            children: [
+              const Icon(Icons.volume_up),
+              Expanded(
+                child: Slider(
+                  value: _sfxVolume,
+                  onChanged: (newVolume) {
+                    setState(() {
+                      _sfxVolume = newVolume;
+                    });
+                    _soundManager.setSfxVolume(newVolume);
+                    if (newVolume > 0) {
+                      // podriamos reproducir un sonido de prueba
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Seleccionar Pista de Música',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          ...List.generate(_soundManager.musicTracks.length, (index) {
+            return RadioListTile<int>(
+              title: Text(_soundManager.trackTitles[index]),
+              value: index,
+              groupValue: _selectedTrackIndex,
+              onChanged: (int? value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedTrackIndex = value;
+                  });
+                  _soundManager.changeMusicTrack(value);
+                }
+              },
+            );
+          }),
+        ],
       ),
     );
   }

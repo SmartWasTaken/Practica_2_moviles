@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/enums.dart';
+import '../../../core/models/emoji_puzzle.dart';
 import '../../../core/models/score.dart';
 import '../../../data/repositories/game_repository.dart';
 import 'game_event.dart';
 import 'game_state.dart';
-import 'dart:math';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   final GameRepository gameRepository;
@@ -30,21 +31,36 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   void _onStartNewGame(StartNewGame event, Emitter<GameState> emit) async {
     _timer?.cancel();
-    String word;
+
+    String correctWord;
+    int wordSize;
+    EmojiPuzzle? puzzle;
+    List<String> visibleEmojis = [];
+
     if (event.gameMode == GameMode.numbers) {
-      word = await gameRepository.getNumber(event.difficulty);
+      correctWord = await gameRepository.getNumber(event.difficulty);
+      wordSize = correctWord.length;
+      puzzle = null;
+    } else if (event.gameMode == GameMode.emojis) {
+      puzzle = await gameRepository.getEmojiPuzzle(event.difficulty);
+      correctWord = puzzle.name;
+      wordSize = puzzle.name.length;
+      if (puzzle.emojis.isNotEmpty) {
+        visibleEmojis = [puzzle.emojis.first];
+      }
     } else {
-      word = await gameRepository.getWord(event.difficulty);
+      correctWord = await gameRepository.getWord(event.difficulty);
+      wordSize = correctWord.length;
+      puzzle = null;
     }
 
     final List<List<String>> initialGuesses = List.generate(maxAttempts, (_) => []);
-    final List<List<LetterStatus>> initialStatuses = List.generate(maxAttempts, (_) => List.filled(word.length, LetterStatus.initial));
-
+    final List<List<LetterStatus>> initialStatuses = List.generate(maxAttempts, (_) => List.filled(wordSize, LetterStatus.initial));
     final initialTime = event.gameMode == GameMode.timeTrial ? event.timeLimit! : Duration.zero;
 
     emit(state.copyWith(
-      correctWord: word,
-      wordSize: word.length,
+      correctWord: correctWord,
+      wordSize: wordSize,
       gameStatus: GameStatus.playing,
       guesses: initialGuesses,
       statuses: initialStatuses,
@@ -56,13 +72,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       initialTimeLimit: event.gameMode == GameMode.timeTrial ? event.timeLimit : null,
       hintedIndices: [],
       hintsUsed: 0,
+      currentPuzzle: puzzle,
+      visibleEmojis: visibleEmojis,
     ));
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.gameStatus == GameStatus.playing) {
         if (state.gameMode == GameMode.normal ||
             state.gameMode == GameMode.competitive ||
-            state.gameMode == GameMode.numbers) {
+            state.gameMode == GameMode.numbers ||
+            state.gameMode == GameMode.emojis) {
           add(TimerTicked(state.timerValue + const Duration(seconds: 1)));
         }
         else if (state.gameMode == GameMode.timeTrial) {
@@ -118,7 +137,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         correctWordLetters[i] = '';
       }
     }
-
     for (int i = 0; i < guessedWord.length; i++) {
       if (newStatuses[i] == LetterStatus.initial) {
         if (correctWordLetters.contains(guessedWord[i])) {
@@ -132,22 +150,23 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     final List<List<LetterStatus>> updatedStatuses = state.statuses.map((list) => List<LetterStatus>.from(list)).toList();
     updatedStatuses[state.currentAttempt] = newStatuses;
-
     GameStatus newGameStatus = GameStatus.playing;
+
     if (guessedWord == correctWord) {
       newGameStatus = GameStatus.win;
     } else if (state.currentAttempt >= maxAttempts - 1) {
       newGameStatus = GameStatus.lose;
     }
 
+    List<String> newVisibleEmojis = state.visibleEmojis;
+    int nextAttempt = state.currentAttempt;
+
     if (newGameStatus == GameStatus.win || newGameStatus == GameStatus.lose) {
       _timer?.cancel();
-
       if (newGameStatus == GameStatus.win) {
         final endTime = DateTime.now();
         final timeInSeconds = state.startTime != null ? endTime.difference(state.startTime!).inSeconds : 0;
         final scoreValue = _calculateScore(state.difficulty, state.currentAttempt + 1, timeInSeconds);
-
         final newScore = Score(
           scoreValue: scoreValue,
           difficulty: state.difficulty,
@@ -158,44 +177,30 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         );
         gameRepository.saveScore(newScore);
       }
+    } else if (newGameStatus == GameStatus.playing) {
+      nextAttempt = state.currentAttempt + 1;
+
+      if (state.gameMode == GameMode.emojis) {
+        if (nextAttempt < state.currentPuzzle!.emojis.length) {
+          newVisibleEmojis = state.currentPuzzle!.emojis.sublist(0, nextAttempt + 1);
+        } else {
+          newVisibleEmojis = state.currentPuzzle!.emojis;
+        }
+      }
     }
 
     emit(state.copyWith(
       statuses: updatedStatuses,
       gameStatus: newGameStatus,
-      currentAttempt: newGameStatus == GameStatus.playing ? state.currentAttempt + 1 : state.currentAttempt,
+      currentAttempt: nextAttempt,
+      visibleEmojis: newVisibleEmojis,
     ));
   }
 
-  int _calculateScore(Difficulty difficulty, int attempts, int timeInSeconds) {
-    int baseScore = 0;
-    int attemptBonusMultiplier = 0;
-    int timeBonusMultiplier = 0;
-
-    switch (difficulty) {
-      case Difficulty.facil:
-        baseScore = 1000;
-        attemptBonusMultiplier = 50;
-        timeBonusMultiplier = 5;
-        break;
-      case Difficulty.medio:
-        baseScore = 2500;
-        attemptBonusMultiplier = 100;
-        timeBonusMultiplier = 10;
-        break;
-      case Difficulty.dificil:
-        baseScore = 5000;
-        attemptBonusMultiplier = 150;
-        timeBonusMultiplier = 15;
-        break;
-    }
-    final attemptBonus = (maxAttempts - attempts) * attemptBonusMultiplier;
-    final timeBonus = (300 - timeInSeconds).clamp(0, 300) * timeBonusMultiplier;
-    return baseScore + attemptBonus + timeBonus;
-  }
-
   void _onHintRequested(HintRequested event, Emitter<GameState> emit) {
-    if (state.gameMode == GameMode.competitive) return;
+    if (state.gameMode == GameMode.competitive ||
+        state.gameMode == GameMode.numbers ||
+        state.gameMode == GameMode.emojis) return;
     if (state.gameStatus != GameStatus.playing) return;
     if (state.currentAttempt >= maxAttempts - 1) return;
     if (state.hintsUsed >= maxHints) return;
@@ -211,7 +216,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         }
       }
     }
-
     final allIndices = List.generate(correctWord.length, (i) => i);
     final availableHintIndices = allIndices.where((i) =>
     !hintedIndices.contains(i) &&
@@ -247,5 +251,32 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       currentAttempt: state.currentAttempt + 1,
       hintsUsed: state.hintsUsed + 1,
     ));
+  }
+
+  int _calculateScore(Difficulty difficulty, int attempts, int timeInSeconds) {
+    int baseScore = 0;
+    int attemptBonusMultiplier = 0;
+    int timeBonusMultiplier = 0;
+
+    switch (difficulty) {
+      case Difficulty.facil:
+        baseScore = 1000;
+        attemptBonusMultiplier = 50;
+        timeBonusMultiplier = 5;
+        break;
+      case Difficulty.medio:
+        baseScore = 2500;
+        attemptBonusMultiplier = 100;
+        timeBonusMultiplier = 10;
+        break;
+      case Difficulty.dificil:
+        baseScore = 5000;
+        attemptBonusMultiplier = 150;
+        timeBonusMultiplier = 15;
+        break;
+    }
+    final attemptBonus = (maxAttempts - attempts) * attemptBonusMultiplier;
+    final timeBonus = (300 - timeInSeconds).clamp(0, 300) * timeBonusMultiplier;
+    return baseScore + attemptBonus + timeBonus;
   }
 }

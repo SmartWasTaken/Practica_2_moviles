@@ -18,12 +18,14 @@ class GameScreen extends StatelessWidget {
     final result = await Navigator.of(context).push(
       FadePageRoute(page: const InGameMenuScreen()),
     );
+
     if (!context.mounted) return;
+
     if (result is Difficulty) {
       final currentState = context.read<GameBloc>().state;
       context.read<GameBloc>().add(StartNewGame(
         difficulty: result,
-        gameMode: context.read<GameBloc>().state.gameMode,
+        gameMode: currentState.gameMode,
         timeLimit: currentState.initialTimeLimit,
       ));
     } else if (result == 'exit') {
@@ -103,9 +105,9 @@ class GameScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('¿Usar una pista?'),
+        title: const Text('¿Usar una Pista?'),
         content: Text(
-          'Esto usará 1 de tus ${GameBloc.maxAttempts} intentos.\n\nSe revelará una letra correcta. ¿Estás seguro?',
+          'Esto usará 1 de tus ${GameBloc.maxAttempts} intentos y 1 de tus 2 pistas.\n\nSe revelará una letra correcta. ¿Estás seguro?',
         ),
         actions: [
           TextButton(
@@ -118,6 +120,39 @@ class GameScreen extends StatelessWidget {
               bloc.add(HintRequested());
             },
             child: const Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmojiPanel(BuildContext context, GameState state) {
+    if (state.gameMode != GameMode.emojis || state.currentPuzzle == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+      margin: const EdgeInsets.only(bottom: 16.0),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade800,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Text(
+            state.currentPuzzle!.theme,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade400, fontStyle: FontStyle.italic),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: state.visibleEmojis
+                .map((emoji) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Text(emoji, style: const TextStyle(fontSize: 28)),
+            ))
+                .toList(),
           ),
         ],
       ),
@@ -142,7 +177,7 @@ class GameScreen extends StatelessWidget {
               builder: (dialogContext) {
                 return AlertDialog(
                   title: Text(
-                    state.gameStatus == GameStatus.win ? '¡Has ganado!' : '¡Has perdido!',
+                    state.gameStatus == GameStatus.win ? '¡Has Ganado!' : '¡Has Perdido!',
                   ),
                   content: Text('La palabra correcta era: ${state.correctWord}'),
                   actions: <Widget>[
@@ -151,28 +186,26 @@ class GameScreen extends StatelessWidget {
                       onPressed: () {
                         final navigator = Navigator.of(context, rootNavigator: true);
                         Navigator.of(dialogContext).pop();
-                        Navigator.of(context).popUntil((route) => route.isFirst);
+                        navigator.popUntil((route) => route.isFirst);
                       },
                     ),
-
                     TextButton(
                       child: const Text('IR AL RANKING'),
                       onPressed: () {
                         final navigator = Navigator.of(context, rootNavigator: true);
                         Navigator.of(dialogContext).pop();
-                        Navigator.of(context).popUntil((route) => route.isFirst);
-                        Navigator.of(context).push(FadePageRoute(page: const RankingScreen()));
+                        navigator.popUntil((route) => route.isFirst);
+                        navigator.push(FadePageRoute(page: const RankingScreen()));
                       },
                     ),
-
                     TextButton(
                       child: const Text('JUGAR DE NUEVO'),
                       onPressed: () {
                         Navigator.of(dialogContext).pop();
                         final currentState = context.read<GameBloc>().state;
                         context.read<GameBloc>().add(StartNewGame(
-                          difficulty: state.difficulty,
-                          gameMode: state.gameMode,
+                          difficulty: currentState.difficulty,
+                          gameMode: currentState.gameMode,
                           timeLimit: currentState.initialTimeLimit,
                         ));
                       },
@@ -185,7 +218,7 @@ class GameScreen extends StatelessWidget {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Palazle'),
+            title: const Text('Wordle'),
             centerTitle: true,
             automaticallyImplyLeading: false,
             leading: IconButton(
@@ -210,7 +243,6 @@ class GameScreen extends StatelessWidget {
             ),
           ),
           body: BlocBuilder<GameBloc, GameState>(
-            // ... (el body no cambia)
             builder: (context, state) {
               if (state.gameStatus == GameStatus.initial) {
                 return const Center(child: CircularProgressIndicator());
@@ -224,14 +256,22 @@ class GameScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(top: 16.0),
-                            child: GameGrid(
-                              wordSize: state.wordSize,
-                              guesses: state.guesses,
-                              statuses: state.statuses,
+                            padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+                            child: Column(
+                              children: [
+                                _buildEmojiPanel(context, state),
+                                GameGrid(
+                                  wordSize: state.wordSize,
+                                  guesses: state.guesses,
+                                  statuses: state.statuses,
+                                ),
+                              ],
                             ),
                           ),
-                          if (state.gameMode != GameMode.competitive && state.gameMode != GameMode.numbers)
+
+                          if (state.gameMode != GameMode.competitive &&
+                              state.gameMode != GameMode.numbers &&
+                              state.gameMode != GameMode.emojis)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0),
                               child: BlocBuilder<GameBloc, GameState>(
@@ -248,6 +288,7 @@ class GameScreen extends StatelessWidget {
                                 },
                               ),
                             ),
+
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                             child: state.gameMode == GameMode.numbers

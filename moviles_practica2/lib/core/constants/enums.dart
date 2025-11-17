@@ -1,4 +1,4 @@
 enum Difficulty { facil, medio, dificil }
-enum GameMode { normal, timeTrial, emojis, numbers, competitive }
+enum GameMode { normal, timeTrial, emojis, numbers, competitive, random }
 enum GameStatus { playing, win, lose, initial }
 enum LetterStatus { initial, notInWord, inWord, correctPosition }
