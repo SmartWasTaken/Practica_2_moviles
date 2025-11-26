@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../routes/custom_page_route.dart';
+import '../widgets/custom_image_button.dart';
+import '../widgets/game_background.dart';
 import 'game_mode_selection_screen.dart';
 import 'ranking_screen.dart';
 import 'settings_screen.dart';
@@ -10,63 +12,84 @@ class MainMenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Definimos un estilo de botón común para no repetir código.
-    final buttonStyle = ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 20), // El padding horizontal ya no es necesario
-      textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-    );
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Palazle - Menú Principal'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: SizedBox(
-          width: 250,
+      body: GameBackground(
+        imagePath: 'assets/images/background.png',
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ElevatedButton(
-                style: buttonStyle,
+              // Título o Logo del juego
+              const Text(
+                'PALAZLE',
+                style: TextStyle(
+                  fontSize: 60,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 5,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(3, 3),
+                      blurRadius: 5.0,
+                      color: Colors.black,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 50),
+
+              // --- BOTÓN JUGAR ---
+              CustomImageButton(
+                defaultImagePath: 'assets/images/btn_jugar_default.png',
+                pressedImagePath: 'assets/images/btn_jugar_pressed.png',
+                width: 220,
+                height: 70,
                 onPressed: () {
                   Navigator.of(context).push(
                     FadePageRoute(page: const GameModeSelectionScreen()),
                   );
                 },
-                child: const Text('Jugar'),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                style: buttonStyle,
+
+              // --- BOTÓN RANKING ---
+              CustomImageButton(
+                defaultImagePath: 'assets/images/btn_ranking_default.png',
+                pressedImagePath: 'assets/images/btn_ranking_pressed.png',
+                width: 220,
+                height: 70,
                 onPressed: () {
                   Navigator.of(context).push(
                     FadePageRoute(page: const RankingScreen()),
                   );
                 },
-                child: const Text('Ranking'),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                style: buttonStyle,
+
+              CustomImageButton(
+                defaultImagePath: 'assets/images/btn_ajustes_default.png',
+                pressedImagePath: 'assets/images/btn_ajustes_pressed.png',
+                width: 220,
+                height: 70,
                 onPressed: () {
                   Navigator.of(context).push(
                     FadePageRoute(page: const SettingsScreen()),
                   );
                 },
-                child: const Text('Ajustes'),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                style: buttonStyle,
-                onPressed: () {
-                  Navigator.of(context).push(
-                    FadePageRoute(page: const TutorialScreen()),
-                  );
-                },
-                child: const Text('Tutorial'),
-              ),
+
+              //CustomImageButton(
+              //  defaultImagePath: 'assets/images/btn_tutorial_default.png',
+              //  pressedImagePath: 'assets/images/btn_tutorial_pressed.png',
+              //  width: 220,
+              //  height: 70,
+              //  onPressed: () {
+              //    Navigator.of(context).push(
+              //      FadePageRoute(page: const TutorialScreen()),
+              //    );
+              //  },
+              //),
             ],
           ),
         ),

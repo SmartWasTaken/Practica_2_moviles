@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/enums.dart';
+import '../../core/services/sound_manager.dart';
 import '../../data/repositories/game_repository.dart';
 import '../../data/repositories/preferences_repository.dart';
 import '../bloc/game/game_bloc.dart';
 import '../bloc/game/game_event.dart';
 import '../routes/custom_page_route.dart';
+import '../widgets/game_background.dart';
 import 'game_screen.dart';
 
 class GameModeSelectionScreen extends StatefulWidget {
@@ -39,10 +41,14 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('Elige un Modo de Juego'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: ListView(
+      body: GameBackground(
+        child:ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           Card(
@@ -50,7 +56,10 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
               leading: const Icon(Icons.play_circle_outline, size: 40),
               title: const Text('Normal', style: TextStyle(fontWeight: FontWeight.bold)),
               subtitle: const Text('Adivina la palabra sin límite de tiempo. ¡El cronómetro sube!'),
-              onTap: () => _startGame(context, GameMode.normal),
+              onTap: () {
+                _startGame(context, GameMode.normal);
+                SoundManager.instance.playSfx('ui_click.wav');
+              }
             ),
           ),
           const SizedBox(height: 16),
@@ -98,7 +107,11 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                    onPressed: () => _startGame(context, GameMode.timeTrial, timeLimit: _selectedTime),
+                    onPressed: () {
+                          _startGame(context, GameMode.timeTrial,
+                              timeLimit: _selectedTime);
+                          SoundManager.instance.playSfx('ui_click.wav');
+                    },
                     child: const Text('Jugar Contrarreloj'),
                   ),
                 ],
@@ -125,6 +138,6 @@ class _GameModeSelectionScreenState extends State<GameModeSelectionScreen> {
           ),
         ],
       ),
-    );
+    ));
   }
 }

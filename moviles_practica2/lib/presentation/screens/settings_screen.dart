@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/enums.dart';
+import '../../core/constants/enums.dart';import '../../core/services/sound_manager.dart';
+
 import '../../data/providers/word_provider.dart';
 import '../../data/repositories/preferences_repository.dart';
 import '../routes/custom_page_route.dart';
@@ -77,6 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Ajustes de Sonido'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
+              SoundManager.instance.playSfx('ui_click.wav');
               Navigator.of(context).push(
                 FadePageRoute(page: const AudioSettingsScreen()),
               );
@@ -86,9 +88,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           Text('Dificultad del Juego', style: Theme.of(context).textTheme.titleLarge),
           const Divider(),
-          RadioListTile<Difficulty>(title: const Text('Fácil (4 letras)'), value: Difficulty.facil, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
-          RadioListTile<Difficulty>(title: const Text('Medio (5 letras)'), value: Difficulty.medio, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
-          RadioListTile<Difficulty>(title: const Text('Difícil (6 letras)'), value: Difficulty.dificil, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
+          RadioListTile<Difficulty>(title: const Text('Fácil'), value: Difficulty.facil, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
+          RadioListTile<Difficulty>(title: const Text('Medio'), value: Difficulty.medio, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
+          RadioListTile<Difficulty>(title: const Text('Difícil'), value: Difficulty.dificil, groupValue: _selectedDifficulty, onChanged: _onDifficultyChanged),
           const SizedBox(height: 24),
 
           if (widget.isInGameMode)

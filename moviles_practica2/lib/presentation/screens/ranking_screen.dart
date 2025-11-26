@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/enums.dart';
 import '../../core/models/score.dart';
+import '../../core/services/sound_manager.dart';
 import '../../data/repositories/game_repository.dart';
 
 class RankingScreen extends StatefulWidget {
@@ -71,6 +72,7 @@ class _RankingScreenState extends State<RankingScreen> {
             selected: _selectedFilter == null,
             onSelected: (bool selected) {
               setState(() { _selectedFilter = null; });
+              SoundManager.instance.playSfx('ui_click.wav');
             },
           ),
           FilterChip(

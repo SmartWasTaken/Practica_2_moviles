@@ -5,6 +5,7 @@ import '../bloc/game/game_bloc.dart';
 import '../bloc/game/game_event.dart';
 import '../bloc/game/game_state.dart';
 import '../routes/custom_page_route.dart';
+import '../widgets/game_background.dart';
 import '../widgets/game_grid.dart';
 import '../widgets/game_keyboard.dart';
 import '../widgets/number_keyboard.dart';
@@ -217,8 +218,11 @@ class GameScreen extends StatelessWidget {
           }
         },
         child: Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: const Text('Wordle'),
+            title: const Text('PALAZLE'),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             centerTitle: true,
             automaticallyImplyLeading: false,
             leading: IconButton(
@@ -242,7 +246,8 @@ class GameScreen extends StatelessWidget {
               ),
             ),
           ),
-          body: BlocBuilder<GameBloc, GameState>(
+          body: GameBackground(
+            child: BlocBuilder<GameBloc, GameState>(
             builder: (context, state) {
               if (state.gameStatus == GameStatus.initial) {
                 return const Center(child: CircularProgressIndicator());
@@ -305,6 +310,6 @@ class GameScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }
