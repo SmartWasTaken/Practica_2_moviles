@@ -57,7 +57,7 @@ class MainMenuScreen extends StatelessWidget {
                 defaultImagePath: 'assets/images/btn_ranking_default.png',
                 pressedImagePath: 'assets/images/btn_ranking_pressed.png',
                 width: 220,
-                height: 70,
+                height: 50,
                 onPressed: () {
                   Navigator.of(context).push(
                     FadePageRoute(page: const RankingScreen()),
@@ -79,17 +79,17 @@ class MainMenuScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              //CustomImageButton(
-              //  defaultImagePath: 'assets/images/btn_tutorial_default.png',
-              //  pressedImagePath: 'assets/images/btn_tutorial_pressed.png',
-              //  width: 220,
-              //  height: 70,
-              //  onPressed: () {
-              //    Navigator.of(context).push(
-              //      FadePageRoute(page: const TutorialScreen()),
-              //    );
-              //  },
-              //),
+              CustomImageButton(
+                defaultImagePath: 'assets/images/btn_tuto_default.png',
+                pressedImagePath: 'assets/images/btn_tuto_pressed.png',
+                width: 220,
+                height: 70,
+                onPressed: () {
+                  Navigator.of(context).push(
+                    FadePageRoute(page: const TutorialScreen()),
+                  );
+                },
+              ),
             ],
           ),
         ),

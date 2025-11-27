@@ -4,6 +4,8 @@ import '../../core/constants/enums.dart';import '../../core/services/sound_manag
 import '../../data/providers/word_provider.dart';
 import '../../data/repositories/preferences_repository.dart';
 import '../routes/custom_page_route.dart';
+import '../widgets/custom_image_button.dart';
+import '../widgets/game_background.dart';
 import 'audio_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -65,10 +67,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('Ajustes'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: ListView(
+      body: GameBackground(
+        child:ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           Text('Sonido', style: Theme.of(context).textTheme.titleLarge),
@@ -99,12 +105,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: const Text('Aplicar'),
             )
           else
-            ElevatedButton(
+            CustomImageButton(
+              defaultImagePath: 'assets/images/btn_volver_default.png',
+              pressedImagePath: 'assets/images/btn_volver_pressed.png',
+              width: 110,
+              height: 70,
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Volver al Menú'),
             ),
         ],
       ),
-    );
+    ));
   }
 }
