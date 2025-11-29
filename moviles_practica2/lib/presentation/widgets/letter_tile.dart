@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/enums.dart';
 import '../bloc/game/game_state.dart';
+import '../bloc/settings/settings_bloc.dart';
 
 class LetterTile extends StatelessWidget {
   final String letter;
@@ -12,12 +14,12 @@ class LetterTile extends StatelessWidget {
     required this.status,
   });
 
-  Color _getBackgroundColor(BuildContext context) {
+  Color _getBackgroundColor(BuildContext context, bool highContrast) {
     switch (status) {
       case LetterStatus.correctPosition:
-        return Colors.green.shade700;
+        return highContrast ? Colors.orange.shade800 : Colors.green.shade700;
       case LetterStatus.inWord:
-        return Colors.amber.shade700;
+        return highContrast ? Colors.blue.shade400 : Colors.amber.shade700;
       case LetterStatus.notInWord:
         return Theme.of(context).colorScheme.secondary.withOpacity(0.5);
       case LetterStatus.initial:
@@ -34,13 +36,14 @@ class LetterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isHighContrast = context.watch<SettingsBloc>().state.isHighContrast;
     return Container(
       width: 50,
       height: 50,
       alignment: Alignment.center,
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        color: _getBackgroundColor(context),
+        color: _getBackgroundColor(context, isHighContrast),
         border: Border.all(
           color: _getBorderColor(context),
           width: 2,

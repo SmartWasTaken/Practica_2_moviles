@@ -6,6 +6,8 @@ class PreferencesRepository {
   static const _musicVolumeKey = 'music_volume';
   static const _sfxVolumeKey = 'sfx_volume';
   static const _selectedMusicKey = 'selected_music_track';
+  static const _highContrastKey = 'high_contrast';
+  static const _hapticsKey = 'haptics_enabled';
 
   Future<void> saveDifficulty(Difficulty difficulty) async {
     final prefs = await SharedPreferences.getInstance();
@@ -59,5 +61,25 @@ class PreferencesRepository {
   Future<int> getSelectedMusicTrack() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt(_selectedMusicKey) ?? 0;
+  }
+
+  Future<void> saveHighContrast(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_highContrastKey, value);
+  }
+
+  Future<bool> getHighContrast() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_highContrastKey) ?? false;
+  }
+
+  Future<void> saveHaptics(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_hapticsKey, value);
+  }
+
+  Future<bool> getHaptics() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_hapticsKey) ?? true;
   }
 }
