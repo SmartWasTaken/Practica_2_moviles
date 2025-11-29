@@ -65,6 +65,7 @@ class _WordleAppState extends State<WordleApp> with WidgetsBindingObserver {
               elevation: 0,
               color: Colors.transparent,
             ),
+            fontFamily: 'GamePocket',
         ),
       home: const MainMenuScreen(),
     ));

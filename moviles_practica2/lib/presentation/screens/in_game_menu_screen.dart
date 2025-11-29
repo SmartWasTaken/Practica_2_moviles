@@ -17,11 +17,13 @@ class InGameMenuScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Botón "Reanudar" (sin cambios)
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                textStyle: const TextStyle(fontSize: 20),
+                textStyle: const TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'GamePocket',
+                ),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -32,7 +34,10 @@ class InGameMenuScreen extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                textStyle: const TextStyle(fontSize: 20),
+                textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontFamily: 'GamePocket',
+                ),
               ),
               onPressed: () async {
                 final newDifficulty = await Navigator.of(context).push<Difficulty?>(
@@ -44,7 +49,7 @@ class InGameMenuScreen extends StatelessWidget {
                   Navigator.of(context).pop(newDifficulty);
                 }
               },
-              child: const Text('Ajustes'), // <-- TEXTO CAMBIADO
+              child: const Text('Ajustes'),
             ),
             const SizedBox(height: 40),
             ElevatedButton(
@@ -52,13 +57,16 @@ class InGameMenuScreen extends StatelessWidget {
                 backgroundColor: Theme.of(context).colorScheme.error,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                textStyle: const TextStyle(fontSize: 20),
+                textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontFamily: 'GamePocket',
+                ),
               ),
               onPressed: () {
                 showDialog(
                   context: context,
                   builder: (dialogContext) => AlertDialog(
-                    title: const Text('Salir al Menú'),
+                    title: const Text('Salir al menú'),
                     content: const Text('¿Estás seguro? Perderás el progreso de la partida actual.'),
                     actions: [
                       TextButton(
@@ -70,13 +78,15 @@ class InGameMenuScreen extends StatelessWidget {
                           Navigator.of(dialogContext).pop();
                           Navigator.of(context).pop('exit');
                         },
-                        child: const Text('Aceptar'),
+                        child: const Text('Aceptar',
+                          style: TextStyle(fontFamily: 'GamePocket'),
+                        ),
                       ),
                     ],
                   ),
                 );
               },
-              child: const Text('Salir al Menú Principal'),
+              child: const Text('Salir al menú Principal'),
             ),
           ],
         ),
